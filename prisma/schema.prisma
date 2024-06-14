@@ -1,0 +1,55 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Estado {
+  id         Int         @id @default(autoincrement())
+  nombre     String      @unique
+  municipios Municipio[]
+}
+
+model Municipio {
+  id          Int         @id @default(autoincrement())
+  nombre      String      @unique
+  estado      Estado      @relation(fields: [estadoId], references: [id])
+  estadoId    Int
+  localidades Localidad[]
+}
+
+model Localidad {
+  id          Int         @id @default(autoincrement())
+  nombre      String      @unique
+  municipio   Municipio   @relation(fields: [municipioId], references: [id])
+  municipioId Int
+  Direccion   Direccion[]
+}
+
+model Cliente {
+  id          Int       @id @default(autoincrement())
+  nombre      String
+  apellidos   String
+  rfc         String    @unique
+  direccion   Direccion @relation(fields: [direccionId], references: [id])
+  email       String
+  telefono    String
+  estatus     String    @default("activo")
+  direccionId Int
+}
+
+model Direccion {
+  id             Int       @id @default(autoincrement())
+  localidad      Localidad @relation(fields: [localidadId], references: [id])
+  localidadId    Int
+  calle          String
+  numeroExterior String
+  numeroInterior String?
+  cp             String
+  Cliente        Cliente[]
+}
